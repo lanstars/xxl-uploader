@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        html,body{font-family:Verdana,Arial,Lucida,Helvetica,"\5B8B\4F53","\5FAE\8F6F\96C5\9ED1",sans-serif;margin:0;padding:0;font-size:12px;color:#666}div,form,img,ul,ol,li,th,td,dl,dt,dd,button,input,fieldset{margin:0;padding:0;border:0}li{list-style-type:none}img{vertical-align:top}strong{font-weight:normal}h1,h2,h3,h4,h5,h6{margin:0;padding:0;font-size:12px}input{font-size:12px;vertical-align:middle}table{border-collapse:collapse;border-spacing:0;text-align:center}i,em,b,s{font-style:normal}.fl{float:left}.fr{float:right}.fnone{float:none}.cl{clear:left}.cr{clear:right}.clear{clear:both}.clr{clear:both;display:block;font-size:0;height:0;line-height:0;overflow:hidden;visibility:hidden;width:0}.clearfix{zoom:1}.clearfix:after{content:'\20';display:block;clear:both}* html .clearfix{height:1%}.zoom{zoom:1}a{text-decoration:none;color:#666}a:hover{color:#0095cd}
+        select,input,button{outline:none;}
+        .w{width:1210px;margin:0 auto;}
+        .left{float: left;}
+        .right{float: right;}
+        .hide{display: none;}
+        .uploaderBtn{ overflow: hidden; }
+        .uploaderBtn input[type=file],.uploaderBtn object{ position: absolute; right: 0 !important; left: auto !important; top: 0; width: 300% !important; height: 100%; cursor: pointer; opacity: 0; }
+        .uploaderBtn:hover{ color: #fff; text-shadow: 0 0 2px #fff; }
+        .btn-upload-img {
+            margin: 10px;
+            display: inline-block;
+            position: relative;
+            padding:0 30px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            border-radius: 2px;
+            background: #FD7474;
+            color: #fff;
+            cursor: pointer;
+        }
+        .d-btn-submit.disabled,
+        .d-btn-cancel.disabled,
+        .uploaderBtn.disabled{  background-color: darkgray !important; cursor: not-allowed !important; text-shadow: 0 0 2px rgba(255,255,255,0.5);}
+        .uploaderBtn.disabled input[type=file],.uploaderBtn.disabled object{ display: none !important; }
+
+
+        .d-btn-submit, .d-btn-cancel, .d-btn-search, .d-btn-blue, .d-btn-orange, .d-btn-page, .d-btn-gray, .d-btn-search-more {
+            -moz-border-radius: 3px;
+            -khtml-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .d-btn-submit, .d-btn-cancel, .d-btn-blue, .d-btn-orange, .d-btn-gray {
+            height: 25px;
+            line-height: 25px;
+            padding: 0 20px;
+            color: #fff;
+        }
+
+        .d-btn-blue {
+            background: #00B5F3;
+        }
+
+        .d-btn-submit, .d-btn-orange, .d-btn-add {
+            background: #FD6157;
+        }
+
+        .d-btn-cancel, .d-btn-gray {
+            background: #BBBBBB;
+        }
+
+
+        /* add uploader list */
+        .uploader-contains{ position: absolute; left:10px; right: 10px; top: 46px; bottom:10px; background: #ffffff; font-family: arial; display: none;  }
+        .uploader-contains .uploader-list{
+            background: #ffffff;
+            max-height: 326px;
+            /*position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 46px;*/
+            overflow-y:auto;
+        }
+
+        .uploader-contains .uploader-list .file-list{
+            max-height: 292px;
+            overflow-y:auto;
+        }
+        .uploader-table{
+            width: 100%;
+            font-size: 12px;
+        }
+        .uploader-table tr:hover{ background-color: #ecf9ff; }
+        .uploader-table th{
+            background: #fcf8f1;
+            border-bottom: 1px solid #e6e6e6;
+            text-align: left;
+            padding: 8px;
+            height: 12px;
+            font-weight: bold;
+        }
+        .uploader-table td{
+            border-top: 1px solid #e6e6e6;
+            text-align: left;
+            padding: 8px;
+            word-wrap: break-word;
+            word-break: break-all;
+            cursor: default;
+        }
+        .uploader-table tr:first-child td{ border-top: none; }
+        .uploader-table a{ cursor: pointer; }
+
+        .uploader-contains .buts{ /*position: absolute; left:0; right: 0; bottom: 0;*/ padding:8px; background: #f2f2f2; border-top: solid 1px #DEDEDE;}
+        .uploader-contains .buts a{ margin-right: 10px; display: inline-block; }
+        .uploader-contains .buts a:hover{ color: #fff; }
+
+        .status{ padding-left: 20px; }
+        .status.select{}
+        .status.progress,.status.error{ color: red; }
+        .status.success{ color:#00aa00; }
+    </style>
+</head>
+<body style="overflow:hidden;">
+<div style="position: relative; width:600px; height:800px; margin: auto; overflow: hidden;">
+    <div><a  id="btn-upload-img" title="选择本地图片上传" class="btn-upload-img">选择本地图片上传</a></div>
+    <div class="uploader-contains" id="uploaderContains">
+        <div class="uploader-list">
+            <div class="list-header">
+                <table class="uploader-table">
+                    <colgroup><col width="248"><col width="100"><col width="90"><col></colgroup>
+                    <thead><tr><th>文件名</th><th>状态</th><th>大小</th><th>操作</th></tr></thead>
+                </table>
+            </div>
+            <div class="file-list">
+                <table class="uploader-table" id="uploaderTable">
+                    <colgroup><col width="248"><col width="100"><col width="90"><col></colgroup>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="buts"><a class="d-btn-submit" id="btnUploadSend">上传</a><a class="d-btn-cancel" id="btnUploadCancel">关闭</a></div>
+    </div>
+</div>
+
+<script id="tplFileTr" type="text/template">
+    <tr><td class="name"></td><td class="status"></td><td class="size"></td><td class="opt"><a class="delete">删除</a></td></tr>
+</script>
+
+<script type="text/javascript" src="//cdn.bootcss.com/jquery/3.0.0-beta1/jquery.min.js"></script>
+<script type="text/javascript" src="../uploaderBase.js"></script>
+<script>
+    var $uploaderContains = $('#uploaderContains');
+    var $listBody = $('#uploaderTable').find('tbody');
+    var tplFileTr = $('#tplFileTr').html();
+    var uploader = new UploaderBase({
+        target: $("#btn-upload-img"),
+        postUrl: '/ajax/upload.aspx',
+        postData: { user: 'xxl' },
+        fileMaxCount:10,
+        fileTypes : "*.gif;*.jpg;*.jpeg;*.png",
+        isHandUpload:true
+    });
+    uploader.on( UploaderBase.event.ERROR, function( files ){
+        console.log( files );
+        var names = [];
+        $.each(files,function(i,f){ names.push(f.name); });
+        alert( '['+names.join('][') + ']等' + files.length +'个文件错误（只支持上传常见的图片类型且单个大小不超过2M）' );
+    });
+    uploader.on( UploaderBase.event.REMOVE, function( files ){
+        $.each(files,function(i,f){
+            $listBody.find('tr[data-file="'+ f.id+'"]').remove();
+        });
+    });
+    uploader.on( UploaderBase.event.START, function( files ){
+        $.each(files,function(i,f){
+            $listBody.find('tr[data-file="'+ f.id+'"]').find('.status').addClass( UploaderBase.event.START).text('开始上传')
+        });
+    });
+    uploader.on( UploaderBase.event.SELECT, function( files ) {
+        $uploaderContains.slideDown();
+        $listBody.html('');
+        $.each( files, function(i, f){
+            var $tr = $( tplFileTr).attr( 'data-file', f.id );
+            $tr.find('.name').text(f.name );
+            $tr.find('.status').addClass( UploaderBase.event.SELECT ).text( '等待上传...' );
+            $tr.find('.size').text( UploaderBase.formatSize(f.size) );
+            $tr.find('.opt').find('.delete').on('click',function(){
+                var fileId = $(this).parents('tr').attr('data-file');
+                uploader.remove( [fileId] );
+            });
+            $listBody.append( $tr );
+        });
+        $('#btnUploadSend').removeClass('disabled');
+    });
+    /*当前队列所以文件上传完毕*/
+    uploader.on( UploaderBase.event.COMPLETES, function(  ){
+        $("#btn-upload-img").removeClass('disabled');
+    });
+
+    uploader.on( UploaderBase.event.SUCCESS, function( data ) {
+        var $tr = $listBody.find('tr[data-file="'+data['local']['id']+'"]');
+        if(data['code']==0){
+            $tr.find('.status').addClass( UploaderBase.event.SUCCESS ).text('上传成功');
+            if(data['data']) $tr.find('.opt').html('').append('<a href="'+data['data']['imgPath']+'" target="_blank">查看</a>');
+        }else{
+            $tr.find('.status').addClass( UploaderBase.event.ERROR ).text( data["desc"] );
+        }
+        console.log(data);
+        $listBody.attr('data-success', parseInt( $listBody.attr('data-success') || 0 ) + 1 );
+    });
+
+    /* 上传按钮 */
+    $('#btnUploadSend').on('click',function(){
+        if( $(this).hasClass('disabled') ) return;
+        $(this).addClass('disabled');
+        $("#btn-upload-img").addClass('disabled');
+        uploader.uploadFiles();
+    });
+    /* 取消关闭事件 */
+    $('#btnUploadCancel').on('click',function(){
+        uploader.removeAll();
+        $uploaderContains.slideUp();
+        $("#btnUploadSend, #btn-upload-img").removeClass('disabled');
+
+        var successCount = parseInt( $listBody.attr('data-success') || 0 );
+        $listBody.removeAttr('data-success');
+
+    });
+</script>
+</body>
+</html>

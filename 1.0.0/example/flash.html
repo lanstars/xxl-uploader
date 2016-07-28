@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>SWF 文件上传</title>
+    <style type="text/css">
+        *{ padding: 0; margin: 0; font-family:"微软雅黑"; }
+        .viewport{
+            width: 600px;
+            padding: 20px;;
+            margin: auto;
+            border: 2px solid crimson;
+        }
+        .log{ min-height: 200px; word-break: break-all; }
+        .log .line{ border-bottom: 1px dashed #009998 ; margin-bottom: 20px;}
+        .but-upload{
+            display:inline-block;
+            position: relative;
+            border-radius: 6px;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 16px;
+            font-size: 16px;
+            background: #ff8000;
+            color: white;
+        }
+        .but-upload object, .but-upload .uploadEle{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .foot { text-align: center; padding: 10px; }
+    </style>
+</head>
+<body>
+<div class="viewport">
+    <div class="log">
+        <div class="line">进行<p id="progress"></p></div>
+        <div class="line">完成<p id="complete"></p></div>
+        <div class="line">错误<p id="error"></p></div>
+    </div>
+    <div class="foot">
+        <a id="but-upload" class="but-upload">
+            选择文件<i id="uploadEle" class="uploadEle"></i>
+        </a>
+    </div>
+</div>
+<script type="text/javascript" src="../uploader.js"></script>
+<script type="text/javascript">
+    new xxlUploader.Uploader({
+        flashId : "uploadEle",
+        swfUrl : "../uploader.swf",
+        postUrl : "/ajax/upload.aspx",
+        postData : { dir: 0, client: 'web' },
+        fileName : 'file',
+        fileTypes : "*.jpg;*.png:*.bmp;*.pdf;*.rar;*.zip",
+        fileMaxSize : 1024 * 1024 * 100,
+        fileMaxCount : 1,
+        debug : true
+    }).on(xxlUploader.EVENT.PROGRESS, function(flashId, fileName, uploadScale, scaleInfo, uploadSpeed, residualTime, currLoaded, totalSize){
+        document.getElementById("progress").innerHTML = JSON.stringify({flashId:flashId, fileName:fileName, uploadScale:uploadScale, scaleInfo:scaleInfo, uploadSpeed:uploadSpeed, residualTime:residualTime, currLoaded:currLoaded, totalSize:totalSize});
+    }).on(xxlUploader.EVENT.COMPLETE, function(flashId, rsData, fileName, fileSize, uploadSeconds){
+        document.getElementById("complete").innerHTML = JSON.stringify({flashId:flashId, rsData:rsData, fileName:fileName, fileSize:fileSize, uploadSeconds:uploadSeconds});
+    }).on(xxlUploader.EVENT.ERROR, function(flashId, type, desc, fileName, maxsize, filesize){
+       document.getElementById("error").innerHTML = JSON.stringify({flashId:flashId, type:type, desc:desc, fileName:fileName, maxsize:maxsize, filesize:filesize});
+    });
+</script>
+
+<center>
+    <br/><br/>
+    <form action="/ajax/upload.aspx" target="result" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" multiple>
+        <input type="submit">
+    </form>
+    <br/>
+    <iframe name="result"></iframe>
+</center>
+</body>
+</html>
