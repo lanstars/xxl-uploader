@@ -144,12 +144,12 @@
     var $listBody = $('#uploaderTable').find('tbody');
     var tplFileTr = $('#tplFileTr').html();
     var uploader = new UploaderBase({
-        target: $("#btn-upload-img"),
-        postUrl: '/ajax/upload.aspx',
-        postData: { user: 'xxl' },
-        fileMaxCount:10,
-        fileTypes : "*.gif;*.jpg;*.jpeg;*.png",
-        isHandUpload:true
+        target: $("#btn-upload-img"), //目标元素
+        postUrl: '/ajax/upload.aspx', //上传的地址
+        postData: { user: 'xxl' },    //附带参数
+        fileMaxCount:10,              //单次数量控制
+        fileTypes : "*.gif;*.jpg;*.jpeg;*.png", //支持的文件类型
+        isHandUpload:true             //是否手动开始
     });
     uploader.on( UploaderBase.event.ERROR, function( files ){
         console.log( files );
