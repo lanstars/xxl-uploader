@@ -14,11 +14,19 @@
                 RandKey=ran.Next(1,200000);
             }
 
+            Response.Write(" ");
+
+            System.Threading.Thread.Sleep(3000);
 
 
             string fileName = DateTime.Now.ToString("yyMMddhhmmsssss") + RandKey.ToString() + file.FileName.Substring(file.FileName.LastIndexOf('.')).ToLower();
 
-            string filePath = Server.MapPath("~/") + "ajax/uploads/" + fileName;
+            string currentFilePath = HttpContext.Current.Request.PhysicalPath.Replace("upload.aspx","");
+
+            string url=HttpContext.Current.Request.Url.AbsolutePath.Replace("upload.aspx","");
+
+            //string filePath = Server.MapPath("~/") + "ajax/uploads/" + fileName;
+            string filePath = currentFilePath + "uploads/" + fileName;
 
 
             /*if (System.IO.Directory.Exists(cover_pathbase)) System.IO.Directory.Delete(cover_pathbase, true);
@@ -26,6 +34,6 @@
 
             file.SaveAs(filePath);
 
-            Response.Write("{\"code\": 0,\"data\": {\"imageId\":1,\"imgName\": \""+fileName+"\",\"folderId\": 0,\"imgPath\": \"/ajax/uploads/"+fileName+"\"},\"desc\": \"\"}");
+            Response.Write("{\"code\": 0,\"data\": {\"imageId\":1,\"imgName\": \""+fileName+"\",\"folderId\": 0,\"imgPath\": \""+url+"/uploads/"+fileName+"\"},\"desc\": \"\"}");
         }
 </script>

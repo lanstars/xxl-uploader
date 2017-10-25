@@ -10,9 +10,9 @@
         .left{float: left;}
         .right{float: right;}
         .hide{display: none;}
-        .uploaderBtn{ overflow: hidden; }
-        .uploaderBtn input[type=file],.uploaderBtn object{ position: absolute; right: 0 !important; left: auto !important; top: 0; width: 300% !important; height: 100%; cursor: pointer; opacity: 0; }
-        .uploaderBtn:hover{ color: #fff; text-shadow: 0 0 2px #fff; }
+        .xxl-uploader{ overflow: hidden; }
+        .xxl-uploader input[type=file],.uploaderBtn object{ position: absolute; right: 0 !important; left: auto !important; top: 0; width: 300% !important; height: 100%; cursor: pointer; opacity: 0; }
+        .xxl-uploader:hover{ color: #fff; text-shadow: 0 0 2px #fff; }
         .btn-upload-img {
             margin: 10px;
             display: inline-block;
@@ -28,8 +28,9 @@
         }
         .d-btn-submit.disabled,
         .d-btn-cancel.disabled,
-        .uploaderBtn.disabled{  background-color: darkgray !important; cursor: not-allowed !important; text-shadow: 0 0 2px rgba(255,255,255,0.5);}
-        .uploaderBtn.disabled input[type=file],.uploaderBtn.disabled object{ display: none !important; }
+
+        .xxl-uploader.disabled{  background-color: darkgray !important; cursor: not-allowed !important; text-shadow: 0 0 2px rgba(255,255,255,0.5);}
+        .xxl-uploader.disabled input[type=file],.uploaderBtn.disabled object{ display: none !important; }
 
 
         .d-btn-submit, .d-btn-cancel, .d-btn-search, .d-btn-blue, .d-btn-orange, .d-btn-page, .d-btn-gray, .d-btn-search-more {
@@ -138,43 +139,44 @@
 </script>
 
 <script type="text/javascript" src="http://cdn.bootcss.com/jquery/3.0.0-beta1/jquery.min.js"></script>
-<script type="text/javascript" src="../uploaderBase.js"></script>
+<script type="text/javascript" src="xxl-swf-uploader.js"></script>
+<script type="text/javascript" src="xxl-uploader.js"></script>
 <script>
     var $uploaderContains = $('#uploaderContains');
     var $listBody = $('#uploaderTable').find('tbody');
     var tplFileTr = $('#tplFileTr').html();
-    var uploader = new UploaderBase({
+    var uploader = new XxlUploader({
         target: $("#btn-upload-img"), //目标元素
-        postUrl: '../../ajax/upload.aspx', //上传的地址
+        postUrl: '../ajax/upload.aspx', //上传的地址
         postData: { user: 'xxl' },    //附带参数
         fileMaxCount:10,              //单次数量控制
         fileTypes : "*.gif;*.jpg;*.jpeg;*.png", //支持的文件类型
         isHandUpload:true             //是否手动开始
     });
-    uploader.on( UploaderBase.event.ERROR, function( files ){
+    uploader.on( XxlUploader.event.ERROR, function( files ){
         console.log( files );
         var names = [];
         $.each(files,function(i,f){ names.push(f.name); });
         alert( '['+names.join('][') + ']等' + files.length +'个文件错误（只支持上传常见的图片类型且单个大小不超过2M）' );
     });
-    uploader.on( UploaderBase.event.REMOVE, function( files ){
+    uploader.on( XxlUploader.event.REMOVE, function( files ){
         $.each(files,function(i,f){
             $listBody.find('tr[data-file="'+ f.id+'"]').remove();
         });
     });
-    uploader.on( UploaderBase.event.START, function( files ){
+    uploader.on( XxlUploader.event.START, function( files ){
         $.each(files,function(i,f){
-            $listBody.find('tr[data-file="'+ f.id+'"]').find('.status').addClass( UploaderBase.event.START).text('开始上传')
+            $listBody.find('tr[data-file="'+ f.id+'"]').find('.status').addClass( XxlUploader.event.START).text('开始上传')
         });
     });
-    uploader.on( UploaderBase.event.SELECT, function( files ) {
+    uploader.on( XxlUploader.event.SELECT, function( files ) {
         $uploaderContains.slideDown();
         $listBody.html('');
         $.each( files, function(i, f){
             var $tr = $( tplFileTr).attr( 'data-file', f.id );
             $tr.find('.name').text(f.name );
-            $tr.find('.status').addClass( UploaderBase.event.SELECT ).text( '等待上传...' );
-            $tr.find('.size').text( UploaderBase.formatSize(f.size) );
+            $tr.find('.status').addClass( XxlUploader.event.SELECT ).text( '等待上传...' );
+            $tr.find('.size').text( XxlUploader.formatSize(f.size) );
             $tr.find('.opt').find('.delete').on('click',function(){
                 var fileId = $(this).parents('tr').attr('data-file');
                 uploader.remove( [fileId] );
@@ -184,17 +186,17 @@
         $('#btnUploadSend').removeClass('disabled');
     });
     /*当前队列所以文件上传完毕*/
-    uploader.on( UploaderBase.event.COMPLETES, function(  ){
+    uploader.on( XxlUploader.event.COMPLETES, function(  ){
         $("#btn-upload-img").removeClass('disabled');
     });
 
-    uploader.on( UploaderBase.event.SUCCESS, function( data ) {
+    uploader.on( XxlUploader.event.SUCCESS, function( data ) {
         var $tr = $listBody.find('tr[data-file="'+data['local']['id']+'"]');
         if(data['code']==0){
-            $tr.find('.status').addClass( UploaderBase.event.SUCCESS ).text('上传成功');
+            $tr.find('.status').addClass( XxlUploader.event.SUCCESS ).text('上传成功');
             if(data['data']) $tr.find('.opt').html('').append('<a href="'+data['data']['imgPath']+'" target="_blank">查看</a>');
         }else{
-            $tr.find('.status').addClass( UploaderBase.event.ERROR ).text( data["desc"] );
+            $tr.find('.status').addClass( XxlUploader.event.ERROR ).text( data["desc"] );
         }
         console.log(data);
         $listBody.attr('data-success', parseInt( $listBody.attr('data-success') || 0 ) + 1 );

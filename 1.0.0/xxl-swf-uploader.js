@@ -13,15 +13,15 @@
     window._xxlMapComplete = {};
     window._xxlMapError = {};
     /* flash通知window的通信桥 */
-    window._xxlUploaderBridgeCallback = {
+    window._xxlSwfUploaderBridgeCallback = {
         progress : function(flashId, fileName, uploadScale, scaleInfo, uploadSpeed, residualTime, currLoaded, totalSize){
-            console.log("xxlUploaderProgress:"+JSON.stringify({flashId:flashId, fileName:fileName, uploadScale:uploadScale, scaleInfo:scaleInfo, uploadSpeed:uploadSpeed, residualTime:residualTime, currLoaded:currLoaded, totalSize:totalSize}));
+            console.log("xxlSwfUploaderProgress:"+JSON.stringify({flashId:flashId, fileName:fileName, uploadScale:uploadScale, scaleInfo:scaleInfo, uploadSpeed:uploadSpeed, residualTime:residualTime, currLoaded:currLoaded, totalSize:totalSize}));
             if(typeof(window._xxlMapProgress[flashId]) == 'function'){
                 window._xxlMapProgress[flashId](flashId, fileName, uploadScale, scaleInfo, uploadSpeed, residualTime, currLoaded, totalSize);
             }
         },
         complete : function(flashId, rsData, fileName, fileSize, uploadSeconds){
-            console.log("xxlUploaderComplete:"+JSON.stringify({flashId:flashId, rsData:rsData, fileName:fileName, fileSize:fileSize, uploadSeconds:uploadSeconds}));
+            console.log("xxlSwfUploaderComplete:"+JSON.stringify({flashId:flashId, rsData:rsData, fileName:fileName, fileSize:fileSize, uploadSeconds:uploadSeconds}));
             if(typeof(window._xxlMapComplete[flashId]) == 'function'){
                 window._xxlMapComplete[flashId](flashId, rsData, fileName, fileSize, uploadSeconds);
             }
@@ -34,34 +34,38 @@
             }else if(type=="3"){
                 //上一个文件正在传输中
             }
-            console.log("xxlUploaderError:"+JSON.stringify({flashId:flashId,type:type,desc:desc,fileName:fileName,maxsize:maxsize,filesize:filesize}));
+            console.log("xxlSwfUploaderError:"+JSON.stringify({flashId:flashId,type:type,desc:desc,fileName:fileName,maxsize:maxsize,filesize:filesize}));
             if(typeof(window._xxlMapError[flashId]) == 'function'){
                 window._xxlMapError[flashId](flashId, type, desc, fileName, maxsize, filesize);
             }
         }
     };
 
-    var xxlUploader = {};
-    xxlUploader.version = '1.0.0';
-    xxlUploader.EVENT ={
+    var xxlSwfUploader = {};
+    xxlSwfUploader.version = '1.0.0';
+    xxlSwfUploader.EVENT ={
         SELECT : "select",
         PROGRESS : 'progress',
         COMPLETE : 'complete',
         ERROR : 'error'
     };
-    xxlUploader.getFlashObjectById = function(id) {
+    xxlSwfUploader.getFlashObjectById = function(id) {
         return window[id] || document[id];
     };
-    xxlUploader.hasFlash = function(){
+    xxlSwfUploader.hasFlash = function(){
         return swfobject.ua.pv[0] >= 9;
     };
-    xxlUploader.flashVersion = swfobject.ua.pv[0];
+    xxlSwfUploader.flashVersion = swfobject.ua.pv[0];
 
-    xxlUploader.Uploader = function(conf){
+    xxlSwfUploader.Uploader = function(conf){
+        if(swfobject.ua.pv[0] < 9){
+            console.error('Not Adobe Flash',swfobject.ua);
+        }
+
         this.debug = conf.debug || false;
 
         this.uploadUri = conf.postUrl;
-        this.swfUrl = conf.swfUrl;
+        this.swfUrl = conf.swfUrl || 'xxl-swf-uploader.swf';
         this.flashId = conf.flashId;
 
         var params = [], list = conf.postData || {};
@@ -72,15 +76,15 @@
         this.uploadType = conf.fileTypes || '*.gif;*.jpg;*.jpeg;*.png;*.bmp';
         this.uploadMaxSize = conf.fileMaxSize || 1024*1024*2;
 
-        this.uploadProgressJs = "window._xxlUploaderBridgeCallback.progress";
-        this.uploadCompleteJs = "window._xxlUploaderBridgeCallback.complete";
-        this.errorJs = "window._xxlUploaderBridgeCallback.error";
+        this.uploadProgressJs = "window._xxlSwfUploaderBridgeCallback.progress";
+        this.uploadCompleteJs = "window._xxlSwfUploaderBridgeCallback.complete";
+        this.errorJs = "window._xxlSwfUploaderBridgeCallback.error";
 
         this._flash = null;
         this.init();
         return this;
     };
-    xxlUploader.Uploader.prototype.init = function(){
+    xxlSwfUploader.Uploader.prototype.init = function(){
         swfobject.embedSWF(
             this.swfUrl,
             this.flashId,
@@ -105,28 +109,28 @@
             },
             {
                 id : this.flashId,
-                name : 'xxlUploader',
+                name : 'xxlSwfUploader',
                 align: 'middle'
             }
         );
     };
 
-    xxlUploader.Uploader.prototype.on = function(eventName,callback){
+    xxlSwfUploader.Uploader.prototype.on = function(eventName,callback){
         switch (eventName){
-            case xxlUploader.EVENT.SELECT: window._xxlMapSelect[this.flashId] = callback; break;
-            case xxlUploader.EVENT.PROGRESS: window._xxlMapProgress[this.flashId] = callback; break;
-            case xxlUploader.EVENT.COMPLETE: window._xxlMapComplete[this.flashId] = callback; break;
-            case xxlUploader.EVENT.ERROR: window._xxlMapError[this.flashId] = callback; break;
+            case xxlSwfUploader.EVENT.SELECT: window._xxlMapSelect[this.flashId] = callback; break;
+            case xxlSwfUploader.EVENT.PROGRESS: window._xxlMapProgress[this.flashId] = callback; break;
+            case xxlSwfUploader.EVENT.COMPLETE: window._xxlMapComplete[this.flashId] = callback; break;
+            case xxlSwfUploader.EVENT.ERROR: window._xxlMapError[this.flashId] = callback; break;
         }
         return this;
     };
 
-    callback && callback(xxlUploader);
+    callback && callback(xxlSwfUploader);
 
-})(function(xxlUploader){
-    window.xxlUploader = xxlUploader;
+})(function( object ){
+    window.xxlSwfUploader = object;
 });
 
 typeof define == 'function' && define(function(){
-    return window.xxlUploader;
+    return window.xxlSwfUploader;
 });

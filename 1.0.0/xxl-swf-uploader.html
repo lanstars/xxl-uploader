@@ -43,35 +43,33 @@
         <div class="line">错误<p id="error"></p></div>
     </div>
     <div class="foot">
-        <a id="but-upload" class="but-upload">
-            选择文件<i id="uploadEle" class="uploadEle"></i>
-        </a>
+        <a id="but-upload" class="but-upload">选择文件<i id="uploadEle" class="uploadEle"></i></a>
     </div>
 </div>
-<script type="text/javascript" src="../uploader.js"></script>
+<script type="text/javascript" src="xxl-swf-uploader.js"></script>
 <script type="text/javascript">
-    new xxlUploader.Uploader({
+    new xxlSwfUploader.Uploader({
         flashId : "uploadEle",
-        swfUrl : "uploader.swf",
-        postUrl : "../../ajax/upload.aspx",
+        swfUrl : "./xxl-swf-uploader.swf",
+        postUrl : "../ajax/upload.aspx",
         postData : { dir: 0, client: 'web' },
         fileName : 'file',
         fileTypes : "*.jpg;*.png:*.bmp;*.pdf;*.rar;*.zip",
         fileMaxSize : 1024 * 1024 * 100,
-        fileMaxCount : 1,
+        fileMaxCount : 10,
         debug : true
-    }).on(xxlUploader.EVENT.PROGRESS, function(flashId, fileName, uploadScale, scaleInfo, uploadSpeed, residualTime, currLoaded, totalSize){
+    }).on(xxlSwfUploader.EVENT.PROGRESS, function(flashId, fileName, uploadScale, scaleInfo, uploadSpeed, residualTime, currLoaded, totalSize){
         document.getElementById("progress").innerHTML = JSON.stringify({flashId:flashId, fileName:fileName, uploadScale:uploadScale, scaleInfo:scaleInfo, uploadSpeed:uploadSpeed, residualTime:residualTime, currLoaded:currLoaded, totalSize:totalSize});
-    }).on(xxlUploader.EVENT.COMPLETE, function(flashId, rsData, fileName, fileSize, uploadSeconds){
+    }).on(xxlSwfUploader.EVENT.COMPLETE, function(flashId, rsData, fileName, fileSize, uploadSeconds){
         document.getElementById("complete").innerHTML = JSON.stringify({flashId:flashId, rsData:rsData, fileName:fileName, fileSize:fileSize, uploadSeconds:uploadSeconds});
-    }).on(xxlUploader.EVENT.ERROR, function(flashId, type, desc, fileName, maxsize, filesize){
+    }).on(xxlSwfUploader.EVENT.ERROR, function(flashId, type, desc, fileName, maxsize, filesize){
        document.getElementById("error").innerHTML = JSON.stringify({flashId:flashId, type:type, desc:desc, fileName:fileName, maxsize:maxsize, filesize:filesize});
     });
 </script>
 
 <center>
     <br/><br/>
-    <form action="/ajax/upload.aspx" target="result" method="post" enctype="multipart/form-data">
+    <form action="../ajax/upload.aspx" target="result" method="post" enctype="multipart/form-data">
         <input type="file" name="file" multiple>
         <input type="submit">
     </form>
