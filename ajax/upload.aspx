@@ -16,7 +16,7 @@
 
             Response.Write(" ");
 
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(100);//ms
 
 
             string fileName = DateTime.Now.ToString("yyMMddhhmmsssss") + RandKey.ToString() + file.FileName.Substring(file.FileName.LastIndexOf('.')).ToLower();

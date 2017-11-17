@@ -14,54 +14,15 @@
 })(function () {
 
     /**
-     * 得到当前脚本的绝对路径
-     */
-    var getCurrAbsPath = function () {
-        var getCurrAbsPathByChromeAndFF = function () {
-            var path = "";
-            try {
-                path = document.currentScript.src;
-            } catch (e) {
-            }
-            return path;
-        };
-        var getCurrAbsPathIE10AndSafariAndOpera9 = function () {
-            var a = {}, stack;
-            try {
-                a.b();
-            }
-            catch (e) {
-                stack = e.stack || e.sourceURL || e.stacktrace;
-            }
-            var rExtractUri = /(?:http|https|file):\/\/.*?\/.+?.js/, absPath = rExtractUri.exec(stack);
-            return absPath[0] || '';
-        };
-        var getCurrAbsPathIE5To9 = function () {
-            var scripts = document.scripts;
-            var isLt8 = ('' + document.querySelector).indexOf('[native code]') === -1;
-            for (var i = scripts.length - 1, script; script = scripts[i--];) {
-                if (script.readyState === 'interative') {
-                    return isLt8 ? script.getAttribute('src', 4) : script.src;
-                }
-            }
-        };
-
-        var path = getCurrAbsPathByChromeAndFF();
-        if (!path) path = getCurrAbsPathIE10AndSafariAndOpera9();
-        if (!path) path = getCurrAbsPathIE5To9();
-        return path;
-    };
-
-
-    /**
      * flash uploader class
      * @type {*|exports|module.exports}
      */
     var xxlSwfUploader = window.xxlSwfUploader || void(0);
 
-    function XxlUploader(config) {
+    function XxlUploader(options) {
 
-        var uploaderOptions = {
+        this.config = $.extend({
+            target:'',
             fileName: 'file',
             postUrl: '',
             postData: {},
@@ -71,13 +32,13 @@
             fileMaxCount: 1,
             isHandUpload: false,
             fileMaxSize: 1024 * 1024 * 2
-        };
+        }, options);
 
-        this.config = $.extend(uploaderOptions, config);
-
-        this.target = $(config.target);
+        this.target = $(this.config.target);
 
         this.isHTML5 = window.FormData ? true : false;
+
+        if(!xxlSwfUploader) this.isFlash = false;
 
         /* 存放事件处理函数 */
         this.cash = {};
@@ -279,15 +240,9 @@
                 buttonTarget.append(replacement);
                 buttonTarget.css({'position': 'relative'});
 
-                var swfUrl = self.config.swfUrl;
-                if (!swfUrl) {
-                    var scriptPath = getCurrAbsPath();
-                    swfUrl = scriptPath.substr(0, scriptPath.lastIndexOf('/') + 1) + 'xxl-swf-uploader.swf';
-                }
-
                 new xxlSwfUploader.Uploader({
                     flashId: id,
-                    swfUrl: swfUrl,
+                    swfUrl: self.config.swfUrl,
                     postUrl: self.config.postUrl,
                     postData: self.config.postData,
                     fieldName: self.config.fileName,
